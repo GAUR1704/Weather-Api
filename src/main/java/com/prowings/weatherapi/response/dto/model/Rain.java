@@ -1,4 +1,4 @@
-package com.prowings.weatherapi.responce.model;
+package com.prowings.weatherapi.response.dto.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,6 +10,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Rain {
-    @JsonProperty("1h") 
-    private double _1h;
+	@JsonProperty("1h")
+	public double _1h;
+	@JsonProperty("3h")
+	public double _3h;
 }

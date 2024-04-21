@@ -1,4 +1,4 @@
-package com.prowings.weatherapi.responce.model;
+package com.prowings.weatherapi.response.model;
 
 import java.util.ArrayList;
 

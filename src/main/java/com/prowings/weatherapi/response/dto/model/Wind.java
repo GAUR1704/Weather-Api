@@ -1,4 +1,4 @@
-package com.prowings.weatherapi.responce.model;
+package com.prowings.weatherapi.response.dto.model;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +7,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Clouds {
-    private int all;
+public class Wind {
+	public double speed;
 }
