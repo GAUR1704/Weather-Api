@@ -26,7 +26,7 @@ public class EpochToDateConverter implements CustomConverter{
 
 	public static String epochToString(long epochTime) {
 		LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(epochTime), ZoneId.systemDefault());
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // Customize the format as
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		String dateString = dateTime.format(formatter);
 		return dateString;
 	}
