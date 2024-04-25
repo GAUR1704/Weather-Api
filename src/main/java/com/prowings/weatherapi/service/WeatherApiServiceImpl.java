@@ -21,62 +21,76 @@ import com.prowings.weatherapi.util.CityLatLong;
 @Service
 public class WeatherApiServiceImpl implements WeatherApiService {
 
-    @Autowired
-    RestTemplate restTemplate;
+	@Autowired
+	RestTemplate restTemplate;
 
-    @Autowired
-    DozerBeanMapper mapper;
+	@Autowired
+	DozerBeanMapper mapper;
 
-    @Value("${base_url}")
-    String baseUrl;
+	double lat;
+	double lon;
 
-    @Value("${apiKey}")
-    String apiKey;
+	@Value("${base_url}")
+	String baseUrl;
 
-    ObjectMapper objMapper = new ObjectMapper();
+	@Value("${apiKey}")
+	String apiKey;
 
-    @Override
-    public ResponseEntity<WeatherDataDTO> getCurrentWeatherData(String city) throws JsonProcessingException {
-        try {
-            List<Double> latLong = CityLatLong.getLatLongCode().get(city);
-            if (latLong == null || latLong.size() < 2) {
-                throw new CityNotFoundException("City '" + city + "' not found");
-            }
+	ObjectMapper objMapper = new ObjectMapper();
 
-            double lat = latLong.get(0);
-            double lon = latLong.get(1);
+	@Override
+	public ResponseEntity<WeatherDataDTO> getCurrentWeatherData(String city) throws JsonProcessingException {
 
-            String dynamicUrl = baseUrl + "?lat=" + lat + "&lon=" + lon + "&appid=" + apiKey;
+		try {
 
-            System.out.println(">>>>API Url : " + dynamicUrl);
+			calculateLatLong(city);
 
-            ResponseEntity<WeatherData> fetchedWeatherData = restTemplate.getForEntity(dynamicUrl, WeatherData.class);
+//		https://api.openweathermap.org/data/2.5/weather?lat=18.6298&lon=73.7997&appid=aea2c2eaeb4020c7d96e8c22ce8d0bb2
 
-            WeatherData data = fetchedWeatherData.getBody();
+			String dynamicUrl = baseUrl + "?lat=" + lat + "&lon=" + lon + "&appid=" + apiKey;
 
-            String responseFromWeatherApi = objMapper.writerWithDefaultPrettyPrinter().writeValueAsString(fetchedWeatherData);
+			System.out.println(">>>>API Url : " + dynamicUrl);
 
-            System.out.println(responseFromWeatherApi);
+			ResponseEntity<WeatherData> fetchedWeatherData = restTemplate.getForEntity(dynamicUrl, WeatherData.class);
 
-            WeatherDataDTO dto = mapper.map(fetchedWeatherData.getBody(), WeatherDataDTO.class);
+			WeatherData data = fetchedWeatherData.getBody();
 
-            String jsonStr = objMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto);
+			String responseFromWeatherApi = objMapper.writerWithDefaultPrettyPrinter()
+					.writeValueAsString(fetchedWeatherData);
 
-            System.out.println(">>>>>After DozerBean Mapper mapping :");
+			System.out.println(responseFromWeatherApi);
 
-            System.out.println(jsonStr);
+			WeatherDataDTO dto = mapper.map(fetchedWeatherData.getBody(), WeatherDataDTO.class);
 
-            System.out.println("<<<<<");
+			String jsonStr = objMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto);
 
-            return new ResponseEntity<>(dto, HttpStatus.OK);
-            
-        } catch (CityNotFoundException ex) {
-        	
-            throw ex;
-            
-        } catch (Exception ex) {
-        	
-            throw new WeatherServiceException("Error fetching weather data for city: " + city, ex);
-        }
-    }
+			System.out.println(">>>>>After DozerBean Mapper mapping :");
+
+			System.out.println(jsonStr);
+
+			System.out.println("<<<<<");
+
+			return new ResponseEntity<WeatherDataDTO>(dto, HttpStatus.OK);
+		}
+
+		catch (CityNotFoundException ex) {
+			throw ex;
+			
+		} catch (Exception ex) {
+			throw new WeatherServiceException("Error fetching weather data for city: " + city, ex);
+		}
+	}
+
+	private void calculateLatLong(String city) {
+
+		List<Double> latLong = CityLatLong.getLatLongCode().get(city);
+		if (latLong == null || latLong.size() < 2) {
+			throw new CityNotFoundException("City '" + city + "' not found");
+		}
+
+		lat = latLong.get(0);
+		lon = latLong.get(1);
+
+	}
+
 }
